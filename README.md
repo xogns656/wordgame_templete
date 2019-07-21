@@ -26,3 +26,7 @@ Successfully tagged minigame_template_dev:latest
 $ docker run -d -p 923:923 -t minigame_template_dev
 ```
 
+## API documentation
+
+Gitbook Document [click here!](https://app.gitbook.com/@cocoa/s/cocoa-project/~/settings/share)
+
