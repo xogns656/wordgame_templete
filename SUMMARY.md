@@ -1,4 +1,6 @@
 # Table of contents
 
-* [Initial page](README.md)
+* [Readme.md](README.md)
+* [Initial Sound Quiz](initial-sound-quiz.md)
+* [Word Chain](word-chain.md)
 
