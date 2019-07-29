@@ -16,8 +16,7 @@ def initial_sound_game_start(request: WSGIRequest) -> JsonResponse:
         request = StartRequest(**request_content)
     except ValidationError as error:        
         return HttpResponse(error.json(), status=400, content_type='application/json')
-
-    print("들어왔니?",request)
+    
     if request.level == 'easy'
         words = Words.objects.filter(word_length__gt=1, word_length__lt=4,
                                     noun=True, very_simple=True)
