@@ -5,12 +5,12 @@ from django.core.handlers.wsgi import WSGIRequest
 from pydantic import ValidationError
 
 from initial_sound_quiz.models import Words
-from initial_sound_quiz.schemas import ContinueRequest, ContinueResponse, StartRequest, StartResponse
+from initial_sound_quiz.schemas import ContinueRequest, ContinueResponse, StartRequest, StartResponse, ContinueRequest2
 
 
 def initial_sound_game_start(request: WSGIRequest) -> JsonResponse:    
     #print("request",request)
-    request_content = {'uid': request.GET.get('uid')}
+    request_content = {'uid': request.GET.get('uid'), 'level': request.Get.get('level')}
     # 모드, 난이도에 대한 정보를 받아서 분기 처리할 수 있게
     try:
         request = StartRequest(**request_content)
@@ -18,14 +18,22 @@ def initial_sound_game_start(request: WSGIRequest) -> JsonResponse:
         return HttpResponse(error.json(), status=400, content_type='application/json')
 
     print("들어왔니?",request)
-    words = Words.objects.filter(word_length__gt=1, word_length__lt=5,
-                                 noun=True, very_simple=True)
-    print(words)
-    response_content = {
-        'uid': request.uid,
-        'text': random.choice(words).consonants
-    }
-        
+    if request.level == 'easy'
+        words = Words.objects.filter(word_length__gt=1, word_length__lt=4,
+                                    noun=True, very_simple=True)
+        print(words)
+        response_content = {
+            'uid': request.uid,
+            'text': random.choice(words).consonants
+        }
+    else :
+        words = Words.objects.filter(word_length__gt=1, word_length__lt=7,
+                                    noun=True, very_simple=True)
+        print(words)
+        response_content = {
+            'uid': request.uid,
+            'text': random.choice(words).consonants
+        }    
     response = StartResponse(**response_content)
     return HttpResponse(response.json(), content_type='application/json')
 
@@ -100,13 +108,14 @@ def initial_sound_game_continue_2(request: WSGIRequest) -> JsonResponse:
         'q': request.GET.get('q'),
         'quiz': request.GET.get('quiz'),
         'hint': request.GET.get('hint'),
-        'level': request.Get.get('level')
+        'level': request.Get.get('level'),
+
     }
     #level은 각 게임의 난이도 정보
     #getlist는 시도한 초성 답안의 저장소
     #sdk에서 저장하고 있다가, contiunue로 request 할 때 보내줘야 함
     try:
-        request = ContinueRequest(**request_content)
+        request = ContinueRequest2(**request_content)
     except ValidationError as error:
         return HttpResponse(error.json(), status=400, content_type='application/json')
     else:
@@ -114,7 +123,7 @@ def initial_sound_game_continue_2(request: WSGIRequest) -> JsonResponse:
             'uid': request.uid
         }
 
-        response = ContinueResponse(**response_content)
+        response = ContinueResponse2(**response_content)
 
         answer_list = Words.objects.filter(content=request.q)
         #힌트를 준 뒤라면, 
@@ -149,13 +158,14 @@ def give_hint(request: WSGIRequest) -> JsonResponse:
         'uid': request.GET.get('uid'),      #사용자 id
         'q': request.GET.get('q'),          #사용자 입력 단어
         'quiz': request.GET.get('quiz'),    #제시해준 초성
-        'hint': request.GET.get('hint')        
+        'hint': request.GET.get('hint'),
+        'level': request.Get.get('level')        
     }
     #level은 각 게임의 난이도 정보
     #getlist는 시도한 초성 답안의 저장소
     #sdk에서 저장하고 있다가, contiunue로 request 할 때 보내줘야 함
     try:
-        request = ContinueRequest(**request_content)
+        request = ContinueRequest2(**request_content)
     except ValidationError as error:
         return HttpResponse(error.json(), status=400, content_type='application/json')
     else:
@@ -163,7 +173,7 @@ def give_hint(request: WSGIRequest) -> JsonResponse:
             'uid': request.uid
         }
 
-    response = ContinueResponse(**response_content)
+    response = ContinueResponse2(**response_content)
         #초성과 일치하는 단어들의 목록을 가져와, 랜덤한 index의 초성, 종성을 준다. 단, 초성이 2글자라면 초성만 준다.
     answer_list = Words.objects.filter(consonants=request.quiz)
     if len(request.quiz) == 2:
