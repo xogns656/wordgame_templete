@@ -20,10 +20,9 @@ from django.conf.urls import url
 from initial_sound_quiz import views as initial_sound_game_view
 from word_chain import views as word_chain_view
 
-
 urlpatterns = [
-    url(r'word-chain/start', word_chain_view.word_chain_start, name="word_chain_start"),
-    url(r'word-chain/continue', word_chain_view.word_chain_continue, name="word_chain_continue"),
-    url(r'initial-sound-quiz/start', initial_sound_game_view.initial_sound_game_start, name="initial_sound_game_start"),
-    url(r'initial-sound-quiz/continue', initial_sound_game_view.initial_sound_game_continue, name="initial_sound_game_continue"),
+    path(r'word-chain/start', word_chain_view.word_chain_start, name="word_chain_start"),
+    path(r'word-chain/continue', word_chain_view.word_chain_continue, name="word_chain_continue"),
+    path(r'initial-sound-quiz/start', initial_sound_game_view.initial_sound_game_start, name="initial_sound_game_start"),
+    path(r'initial-sound-quiz/continue', initial_sound_game_view.initial_sound_game_continue, name="initial_sound_game_continue"),
 ]

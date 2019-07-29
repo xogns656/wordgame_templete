@@ -13,3 +13,4 @@ class Words(models.Model):
     noun = models.BooleanField(default=False)
     very_simple = models.BooleanField(default=False)
     consonants = models.TextField()
+

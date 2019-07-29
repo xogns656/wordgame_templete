@@ -16,3 +16,10 @@ def check_match(agent_word: str, user_query: str):
         return INITIAL_SOUND_SET[agent_word[-1]] == user_query[0]
     else:
         return agent_word[-1] == user_query[0]
+
+def check_reverse_match(agent_word: str, user_query: str):
+    #reverse condition
+    if agent_word[0] in INITIAL_SOUND_SET:
+        return INITIAL_SOUND_SET[agent_word[0]] == user_query[-1]
+    else:
+        return agent_word[0] == user_query[-1]

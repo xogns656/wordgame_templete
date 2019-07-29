@@ -5,7 +5,7 @@ ADD requirements.txt /app/
 RUN pip install -r requirements.txt
 COPY . .
 RUN echo export PATH="$HOME/.local/bin:$PATH"
-EXPOSE 923
+EXPOSE 8000
 ENTRYPOINT ["./entrypoint_dev.sh"]
 RUN ["chmod", "+x", "./entrypoint_dev.sh"]
 CMD ["start"]
