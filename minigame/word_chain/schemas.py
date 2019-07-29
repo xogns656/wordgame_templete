@@ -3,11 +3,18 @@ from pydantic import BaseModel, validator
 
 class StartRequest(BaseModel):
     uid: str
+    level : str
 
     @validator('uid')
     def uid_must_be_not_an_empty_string(cls, value):
         if not len(value):
             raise ValueError('UID cannot be an empty string.')
+        return value
+        
+    @validator('level')
+    def level_must_be_not_an_empty_string(cls, value):
+        if not len(value):
+            raise ValueError('level cannot be an empty string.')
         return value
 
 
@@ -32,6 +39,7 @@ class ContinueRequest(BaseModel):
     uid: str
     q: str
     last_word: str
+    level : str
     duplications: list = []
 
     @validator('uid')
@@ -47,9 +55,45 @@ class ContinueRequest(BaseModel):
         return value
 
     @validator('last_word')
-    def quiz_must_be_not_an_empty_string(cls, value):
+    def last_word_must_be_not_an_empty_string(cls, value):
         if not value:
             raise ValueError('The last word cannot be an empty string.')
+        return value
+
+    @validator('level')
+    def level_must_be_not_an_empty_string(cls, value):
+        if not value:
+            raise ValueError('The level cannot be an empty string.')
+        return value
+
+class ReverseContinueRequest(BaseModel):
+    uid: str
+    q: str
+    first_word: str
+    level : str
+    duplications: list = []
+
+    @validator('uid')
+    def uid_must_be_not_an_empty_string(cls, value):
+        if not value:
+            raise ValueError('UID cannot be an empty string.')
+        return value
+
+    @validator('q')
+    def query_must_be_not_an_empty_string(cls, value):
+        if not value:
+            raise ValueError('The query cannot be an empty string.')
+        return value
+     @validator('level')
+    def level_must_be_not_an_empty_string(cls, value):
+       if not value:
+           raise ValueError('The level cannot be an empty string.')
+       return value   
+
+    @validator('first_word')
+    def first_word_must_be_not_an_empty_string(cls, value):
+        if not value:
+            raise ValueError('The first word cannot be an empty string.')
         return value
 
 

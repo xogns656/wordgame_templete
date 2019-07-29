@@ -7,11 +7,13 @@ from pydantic import ValidationError
 from word_chain.models import Words
 from word_chain.utils import check_match, check_reverse_match
 from word_chain.consts import INITIAL_SOUND_SET
-from word_chain.schemas import ContinueRequest, ContinueResponse, StartRequest, StartResponse
+from word_chain.schemas import ContinueRequest, ContinueResponse, StartRequest, StartResponse, ReverseContinueRequest
 
 
 def word_chain_start(request: WSGIRequest) -> JsonResponse:
-    request_content = {'uid': request.GET.get('uid')}
+    request_content = {
+        'uid': request.GET.get('uid'),
+        'level': request.GET.get('level')}
     try:
         request = StartRequest(**request_content)
     except ValidationError as error:
@@ -31,7 +33,8 @@ def word_chain_continue(request):
         'uid': request.GET.get('uid'),
         'q': request.GET.get('q'),
         'last_word': request.GET.get('last-word'),
-        'duplications': request.GET.getlist('duplications')
+        'duplications': request.GET.getlist('duplications'),
+        'level': request.Get.get('level')
     }
     try:
         request = ContinueRequest(**request_content)
@@ -96,11 +99,12 @@ def reverse_mode_continue(request):
     request_content = {
         'uid': request.GET.get('uid'),
         'q': request.GET.get('q'),
-        'last_word': request.GET.get('last-word'),
-        'duplications': request.GET.getlist('duplications')
+        'first_word': request.GET.get('first_word'),
+        'duplications': request.GET.getlist('duplications'),
+        'level': request.Get.get('level')
     }
     try:
-        request = ContinueRequest(**request_content)
+        request = ReverseContinueRequest(**request_content)
     except ValueError as error:
         return HttpResponse(error.json(), status=400, content_type='application/json')
 
@@ -112,7 +116,7 @@ def reverse_mode_continue(request):
         response = HttpResponse(response.json(), content_type='application/json')
         return response
 
-    if not check_reverse_match(request.last_word, request.q):
+    if not check_reverse_match(request.first_word, request.q):
         response.error = 'wrong_answer'
         response.error_message = 'User sent wrong answer.'
         response = HttpResponse(response.json(), content_type='application/json')
