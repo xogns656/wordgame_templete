@@ -13,13 +13,18 @@ from word_chain.schemas import ContinueRequest, ContinueResponse, StartRequest, 
 def word_chain_start(request: WSGIRequest) -> JsonResponse:
     request_content = {
         'uid': request.GET.get('uid'),
-        'level': request.GET.get('level')}
+        'level': request.GET.get('level')
+    }
     try:
         request = StartRequest(**request_content)
     except ValidationError as error:
-        return HttpResponse(error.json(), status=400, content_type='application/json')
+        return HttpResponse(error.json(),
+                            status=400,
+                            content_type='application/json')
 
-    words = Words.objects.filter(word_length__gt=1, noun=True, very_simple=True)
+    words = Words.objects.filter(word_length__gt=1,
+                                 noun=True,
+                                 very_simple=True)
     response_content = {
         'uid': request.uid,
         'text': random.choice(words).content
@@ -39,33 +44,38 @@ def word_chain_continue(request):
     try:
         request = ContinueRequest(**request_content)
     except ValueError as error:
-        return HttpResponse(error.json(), status=400, content_type='application/json')
+        return HttpResponse(error.json(),
+                            status=400,
+                            content_type='application/json')
 
     response_content = {'uid': request.uid}
     response = ContinueResponse(**response_content)
     if len(request.q) < 2:
         response.error = 'too_short_word'
         response.error_message = 'User sent too short word.'
-        response = HttpResponse(response.json(), content_type='application/json')
+        response = HttpResponse(response.json(),
+                                content_type='application/json')
         return response
 
     if not check_match(request.last_word, request.q):
         response.error = 'wrong_answer'
         response.error_message = 'User sent wrong answer.'
-        response = HttpResponse(response.json(), content_type='application/json')
+        response = HttpResponse(response.json(),
+                                content_type='application/json')
         return response
 
     if request.q in request.duplications:
         response.error = 'duplicated_answer'
         response.error_message = 'User sent duplicated answer.'
-        response = HttpResponse(response.json(), content_type='application/json')
+        response = HttpResponse(response.json(),
+                                content_type='application/json')
         return response
     #db에 해당하는 단어가 없는 경우
     if not len(Words.objects.filter(content=request.q)):
         response.error = 'not_found_word'
         response.error_message = 'Cannot find the word from dictionary.'
         return HttpResponse(response.json(), content_type='application/json')
-    
+
     #sdk에서 저장해줘야 한다.
     response.duplications = request.duplications.append(request.q)
     # 플레이어가 말한 단어의 끝말로 시작하는 단어를 db에서 찾는 코드 시작
@@ -76,11 +86,13 @@ def word_chain_continue(request):
         if not words:
             response.error = 'user_win'
             response.error_message = 'User won.'
-            return HttpResponse(response.json(), content_type='application/json')
+            return HttpResponse(response.json(),
+                                content_type='application/json')
         else:
             response.text = random.choice(words).content
             response.is_game_over = False
-            return HttpResponse(response.json(), content_type='application/json')
+            return HttpResponse(response.json(),
+                                content_type='application/json')
 
     else:
         words = Words.objects.filter(word_length__gt=1, word_length__lt=5, first_sound=request.q[-1],
@@ -89,11 +101,14 @@ def word_chain_continue(request):
         if not words:
             response.error = 'user_win'
             response.error_message = 'User won.'
-            return HttpResponse(response.json(), content_type='application/json')
+            return HttpResponse(response.json(),
+                                content_type='application/json')
         else:
             response.text = random.choice(words).content
             response.is_game_over = False
-            return HttpResponse(response.json(), content_type='application/json')
+            return HttpResponse(response.json(),
+                                content_type='application/json')
+
 
 def reverse_mode_continue(request):
     request_content = {
@@ -106,33 +121,38 @@ def reverse_mode_continue(request):
     try:
         request = ReverseContinueRequest(**request_content)
     except ValueError as error:
-        return HttpResponse(error.json(), status=400, content_type='application/json')
+        return HttpResponse(error.json(),
+                            status=400,
+                            content_type='application/json')
 
     response_content = {'uid': request.uid}
     response = ContinueResponse(**response_content)
     if len(request.q) < 2:
         response.error = 'too_short_word'
         response.error_message = 'User sent too short word.'
-        response = HttpResponse(response.json(), content_type='application/json')
+        response = HttpResponse(response.json(),
+                                content_type='application/json')
         return response
 
     if not check_reverse_match(request.first_word, request.q):
         response.error = 'wrong_answer'
         response.error_message = 'User sent wrong answer.'
-        response = HttpResponse(response.json(), content_type='application/json')
+        response = HttpResponse(response.json(),
+                                content_type='application/json')
         return response
 
     if request.q in request.duplications:
         response.error = 'duplicated_answer'
         response.error_message = 'User sent duplicated answer.'
-        response = HttpResponse(response.json(), content_type='application/json')
+        response = HttpResponse(response.json(),
+                                content_type='application/json')
         return response
     #db에 해당하는 단어가 없는 경우
     if not len(Words.objects.filter(content=request.q)):
         response.error = 'not_found_word'
         response.error_message = 'Cannot find the word from dictionary.'
         return HttpResponse(response.json(), content_type='application/json')
-    
+
     #sdk에서 저장해줘야 한다.
     response.duplications = request.duplications.append(request.q)
     # 플레이어가 말한 단어의 끝말로 시작하는 단어를 db에서 찾는 코드 시작
@@ -143,11 +163,13 @@ def reverse_mode_continue(request):
         if not words:
             response.error = 'user_win'
             response.error_message = 'User won.'
-            return HttpResponse(response.json(), content_type='application/json')
+            return HttpResponse(response.json(),
+                                content_type='application/json')
         else:
             response.text = random.choice(words).content
             response.is_game_over = False
-            return HttpResponse(response.json(), content_type='application/json')
+            return HttpResponse(response.json(),
+                                content_type='application/json')
 
     else:
         words = Words.objects.filter(word_length__gt=1, word_length__lt=5, last_sound=request.q[0],
@@ -156,8 +178,10 @@ def reverse_mode_continue(request):
         if not words:
             response.error = 'user_win'
             response.error_message = 'User won.'
-            return HttpResponse(response.json(), content_type='application/json')
+            return HttpResponse(response.json(),
+                                content_type='application/json')
         else:
             response.text = random.choice(words).content
             response.is_game_over = False
-            return HttpResponse(response.json(), content_type='application/json')
+            return HttpResponse(response.json(),
+                                content_type='application/json')

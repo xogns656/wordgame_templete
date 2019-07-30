@@ -3,14 +3,14 @@ from pydantic import BaseModel, validator
 
 class StartRequest(BaseModel):
     uid: str
-    level : str
+    level: str
 
     @validator('uid')
     def uid_must_be_not_an_empty_string(cls, value):
         if not len(value):
             raise ValueError('UID cannot be an empty string.')
         return value
-        
+
     @validator('level')
     def level_must_be_not_an_empty_string(cls, value):
         if not len(value):
@@ -39,7 +39,7 @@ class ContinueRequest(BaseModel):
     uid: str
     q: str
     last_word: str
-    level : str
+    level: str
     duplications: list = []
 
     @validator('uid')
@@ -66,11 +66,12 @@ class ContinueRequest(BaseModel):
             raise ValueError('The level cannot be an empty string.')
         return value
 
+
 class ReverseContinueRequest(BaseModel):
     uid: str
     q: str
     first_word: str
-    level : str
+    level: str
     duplications: list = []
 
     @validator('uid')
@@ -84,11 +85,12 @@ class ReverseContinueRequest(BaseModel):
         if not value:
             raise ValueError('The query cannot be an empty string.')
         return value
-     @validator('level')
+
+    @validator('level')
     def level_must_be_not_an_empty_string(cls, value):
-       if not value:
-           raise ValueError('The level cannot be an empty string.')
-       return value   
+        if not value:
+            raise ValueError('The level cannot be an empty string.')
+        return value
 
     @validator('first_word')
     def first_word_must_be_not_an_empty_string(cls, value):

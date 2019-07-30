@@ -14,3 +14,11 @@ class Words(models.Model):
     very_simple = models.BooleanField(default=False)
     consonants = models.TextField()
 
+
+class Session(models.Model):
+    id = models.IntegerField(primary_key=True)
+    uid = models.TextField()
+    chain_easy = models.IntegerField(default=0)
+    chain_hard = models.IntegerField(default=0)
+    init_easy = models.IntegerField(default=0)
+    init_hard = models.IntegerField(default=0)
