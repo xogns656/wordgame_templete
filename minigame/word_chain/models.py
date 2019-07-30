@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Words(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.IntegerField(primary_key=True, serialize=True)
     content = models.TextField()
     word_type = models.TextField()
     word_length = models.IntegerField(default=0)
@@ -16,7 +16,7 @@ class Words(models.Model):
 
 
 class Session(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.IntegerField(primary_key=True, serialize=True)
     uid = models.TextField()
     chain_easy = models.IntegerField(default=0)
     chain_hard = models.IntegerField(default=0)
