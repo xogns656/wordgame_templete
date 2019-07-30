@@ -12,7 +12,7 @@
 /env/
 MANIFEST
 coverage.*
-
+package-lock.json
 !.gitignore
 !.travis.yml
 !.isort.cfg
