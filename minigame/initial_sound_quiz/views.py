@@ -42,7 +42,7 @@ def initial_sound_game_start(request: WSGIRequest) -> JsonResponse:
 
 def next_infinite_initial_sound_game(request: WSGIRequest) -> JsonResponse:     
     #print("request",request)
-    request_content = {'uid': request.GET.get('uid'), 'level': request.GET.get('level'), request.GET.get('hint')}
+    request_content = {'uid': request.GET.get('uid'), 'level': request.GET.get('level'), zrequest.GET.get('hint')}
     # 모드, 난이도에 대한 정보를 받아서 분기 처리할 수 있게
     try:
         request = NextStageRequest(**request_content)
