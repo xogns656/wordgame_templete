@@ -4,7 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from django.core.handlers.wsgi import WSGIRequest
 from pydantic import ValidationError
 
-from initial_sound_quiz.models import Words
+from initial_sound_quiz.models import Words, Session
 from initial_sound_quiz.schemas import ContinueRequest, ContinueResponse, InfiniteContinueResponse, StartRequest, StartResponse, InfiniteContinueRequest, NextStageRequest
 
 
@@ -16,6 +16,7 @@ def initial_sound_game_start(request: WSGIRequest) -> JsonResponse:
         'level': request.GET.get('level')
     }
     # 모드, 난이도에 대한 정보를 받아서 분기 처리할 수 있게
+
     try:
         request = StartRequest(**request_content)
     except ValidationError as error:
@@ -29,11 +30,22 @@ def initial_sound_game_start(request: WSGIRequest) -> JsonResponse:
                                      noun=True,
                                      very_simple=True)
         print(words)
+        if not Session.objects.filter(uid=request.uid):
+            Session.objects.create(uid=request.uid)
+            userInfo = Session.objects.filter(uid=request.uid)
+            print('new?')
+            score = userInfo.values()[0]['init_easy']
+        else:
+            userInfo = Session.objects.filter(uid=request.uid)
+            print('old?')
+            score = userInfo.values()[0]['init_easy']
+        print(Session.objects.all().values())
         response_content = {
             'uid': request.uid,
             'text': random.choice(words).consonants,
             'hint': 3,
-            'hintGiven': 0
+            'hintGiven': 0,
+            'score': score
         }
     else:
         words = Words.objects.filter(word_length__gt=2,
@@ -45,9 +57,11 @@ def initial_sound_game_start(request: WSGIRequest) -> JsonResponse:
             'uid': request.uid,
             'text': random.choice(words).consonants,
             'hint': 3,
-            'hintGiven': 0
+            'hintGiven': 0,
+            'score': score
         }
     response = StartResponse(**response_content)
+    print('------', response)
     return HttpResponse(response.json(), content_type='application/json')
 
 
