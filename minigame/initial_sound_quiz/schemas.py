@@ -23,7 +23,6 @@ class NextStageRequest(BaseModel):
     level: str
     hint: int
     hintGiven: int
-    score : int
 
     @validator('uid')
     def uid_must_be_not_an_empty_string(cls, value):

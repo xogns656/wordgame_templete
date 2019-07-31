@@ -4,7 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from django.core.handlers.wsgi import WSGIRequest
 from pydantic import ValidationError
 
-from word_chain.models import Words
+from word_chain.models import Words ,Session
 from word_chain.utils import check_match, check_reverse_match
 from word_chain.consts import INITIAL_SOUND_SET
 from word_chain.schemas import ContinueRequest, ContinueResponse, StartRequest, StartResponse, ReverseContinueRequest
@@ -25,11 +25,38 @@ def word_chain_start(request: WSGIRequest) -> JsonResponse:
     words = Words.objects.filter(word_length__gt=1,
                                  noun=True,
                                  very_simple=True)
-    response_content = {
-        'uid': request.uid,
-        'text': random.choice(words).content
-    }
+
+    if request.level == 'easy':
+        if not Session.objects.filter(uid=request.uid):
+            Session.objects.create(uid=request.uid)
+            userInfo = Session.objects.filter(uid=request.uid)
+            score = userInfo.values()[0]['chain_easy']
+        else:
+            userInfo = Session.objects.filter(uid=request.uid)
+            print('old?')
+            score = userInfo.values()[0]['chain_easy']
+        print(Session.objects.all().values())
+        response_content = {
+            'uid': request.uid,
+            'text': random.choice(words).content,
+            'score': score
+        }
+    elif request.level == 'hard':
+        if not Session.objects.filter(uid=request.uid):
+            Session.objects.create(uid=request.uid)
+            userInfo = Session.objects.filter(uid=request.uid)
+            score = userInfo.values()[0]['chain_hard']
+        else:
+            userInfo = Session.objects.filter(uid=request.uid)
+            score = userInfo.values()[0]['chain_hard']                             
+        print(words)
+        response_content = {
+            'uid': request.uid,
+            'text': random.choice(words).content,
+            'score': score
+        }
     response = StartResponse(**response_content)
+    print(response)
     return HttpResponse(response.json(), content_type='application/json')
 
 
@@ -39,7 +66,7 @@ def word_chain_continue(request):
         'q': request.GET.get('q'),
         'last_word': request.GET.get('last-word'),
         'duplications': request.GET.getlist('duplications'),
-        'level': request.Get.get('level')
+        'level': request.GET.get('level')
     }
     try:
         request = ContinueRequest(**request_content)

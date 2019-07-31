@@ -79,8 +79,7 @@ def next_infinite_initial_sound_game(request: WSGIRequest) -> JsonResponse:
     request_content = {
         'uid': request.GET.get('uid'),
         'level': request.GET.get('level'),
-        'hint': request.GET.get('hint'),
-        'score': request.GET.get('score')
+        'hint': request.GET.get('hint')
     }
     # 모드, 난이도에 대한 정보를 받아서 분기 처리할 수 있게
     try:
@@ -100,11 +99,11 @@ def next_infinite_initial_sound_game(request: WSGIRequest) -> JsonResponse:
             Session.objects.create(uid=request.uid)
             userInfo = Session.objects.filter(uid=request.uid)
             print('new?')
-            score = userInfo.values()[0]['init_easy']
+            score = userInfo.values()[0]['i_init_easy']
         else:
             userInfo = Session.objects.filter(uid=request.uid)
             print('old?')
-            score = userInfo.values()[0]['init_easy']   
+            score = userInfo.values()[0]['i_init_easy']   
         response_content = {
             'uid': request.uid,
             'text': random.choice(words).consonants,
@@ -121,11 +120,11 @@ def next_infinite_initial_sound_game(request: WSGIRequest) -> JsonResponse:
             Session.objects.create(uid=request.uid)
             userInfo = Session.objects.filter(uid=request.uid)
             print('new?')
-            score = userInfo.values()[0]['init_easy']
+            score = userInfo.values()[0]['i_init_hard']
         else:
             userInfo = Session.objects.filter(uid=request.uid)
             print('old?')
-            score = userInfo.values()[0]['init_easy']   
+            score = userInfo.values()[0]['i_init_hard']   
         response_content = {
             'uid': request.uid,
             'text': random.choice(words).consonants,
@@ -143,7 +142,8 @@ def initial_sound_game_continue(request: WSGIRequest) -> JsonResponse:
         'q': request.GET.get('q'),
         'quiz': request.GET.get('quiz'),
         'duplications': request.GET.getlist('duplications'),
-        'level': request.GET.get('level')
+        'level': request.GET.get('level'),
+        'score' : request.GET.get('score')
     }
     #level은 각 게임의 난이도 정보
     #getlist list 형식의 querystring을 처리하기 위한 것
@@ -197,7 +197,7 @@ def initial_sound_game_continue(request: WSGIRequest) -> JsonResponse:
                                 content_type='application/json')
         # db에 아직 답변할 단어가 남아있으면, 해당 단어를 AI가 답변한다
         else:
-            response.text = random.choice(words).content
+            response.text = random.choice(words).content             
             response.is_game_over = False
             return HttpResponse(response.json(),
                                 content_type='application/json')
@@ -213,7 +213,8 @@ def infinite_initial_sound_game_continue(request: WSGIRequest) -> JsonResponse:
         'quiz': request.GET.get('quiz'),
         'hint': request.GET.get('hint'),
         'level': request.GET.get('level'),
-        'hintGiven': request.GET.get('hintGiven')
+        'hintGiven': request.GET.get('hintGiven'),
+        'score' : request.GET.get('score')
     }
     #level은 각 게임의 난이도 정보
     #getlist는 시도한 초성 답안의 저장소
@@ -269,7 +270,7 @@ def infinite_initial_sound_game_continue(request: WSGIRequest) -> JsonResponse:
                                 content_type='application/json')
         # db에 아직 답변할 단어가 남아있으면, 해당 단어를 AI가 답변한다
         else:
-            response.text = random.choice(words).content
+            response.text = random.choice(words).content            
             response.is_game_over = False
             return HttpResponse(response.json(),
                                 content_type='application/json')
@@ -282,7 +283,8 @@ def give_hint(request: WSGIRequest) -> JsonResponse:
         'quiz': request.GET.get('quiz'),  #제시해준 초성
         'hint': request.GET.get('hint'),
         'level': request.GET.get('level'),
-        'hintGiven': request.GET.get('hintGiven')
+        'hintGiven': request.GET.get('hintGiven'),
+        'score' : request.GET.get('score')
     }
     #level은 각 게임의 난이도 정보
     #getlist는 시도한 초성 답안의 저장소

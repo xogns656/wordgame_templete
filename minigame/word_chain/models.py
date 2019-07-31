@@ -16,9 +16,13 @@ class Words(models.Model):
 
 
 class Session(models.Model):
-    id = models.IntegerField(primary_key=True, serialize=True)
+    id = models.IntegerField(primary_key=True)
     uid = models.TextField()
     chain_easy = models.IntegerField(default=0)
     chain_hard = models.IntegerField(default=0)
+    r_chain_easy = models.IntegerField(default=0) 
+    r_chain_hard = models.IntegerField(default=0) 
     init_easy = models.IntegerField(default=0)
     init_hard = models.IntegerField(default=0)
+    i_chain_easy = models.IntegerField(default=0) 
+    i_chain_hard = models.IntegerField(default=0) 
