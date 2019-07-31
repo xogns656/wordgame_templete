@@ -47,11 +47,20 @@ def initial_sound_game_start(request: WSGIRequest) -> JsonResponse:
             'hintGiven': 0,
             'score': score
         }
-    else:
+    elif request.level == 'hard':
         words = Words.objects.filter(word_length__gt=2,
                                      word_length__lt=7,
                                      noun=True,
                                      very_simple=True)
+        if not Session.objects.filter(uid=request.uid):
+            Session.objects.create(uid=request.uid)
+            userInfo = Session.objects.filter(uid=request.uid)
+            print('new?')
+            score = userInfo.values()[0]['init_hard']
+        else:
+            userInfo = Session.objects.filter(uid=request.uid)
+            print('old?')
+            score = userInfo.values()[0]['init_hard']                             
         print(words)
         response_content = {
             'uid': request.uid,
@@ -70,7 +79,8 @@ def next_infinite_initial_sound_game(request: WSGIRequest) -> JsonResponse:
     request_content = {
         'uid': request.GET.get('uid'),
         'level': request.GET.get('level'),
-        'hint': request.GET.get('hint')
+        'hint': request.GET.get('hint'),
+        'score': request.GET.get('score')
     }
     # 모드, 난이도에 대한 정보를 받아서 분기 처리할 수 있게
     try:
@@ -86,18 +96,36 @@ def next_infinite_initial_sound_game(request: WSGIRequest) -> JsonResponse:
                                      noun=True,
                                      very_simple=True)
         print(words)
+        if not Session.objects.filter(uid=request.uid):
+            Session.objects.create(uid=request.uid)
+            userInfo = Session.objects.filter(uid=request.uid)
+            print('new?')
+            score = userInfo.values()[0]['init_easy']
+        else:
+            userInfo = Session.objects.filter(uid=request.uid)
+            print('old?')
+            score = userInfo.values()[0]['init_easy']   
         response_content = {
             'uid': request.uid,
             'text': random.choice(words).consonants,
             'hint': request.hint,
             'hintGiven': 0
         }
-    else:
-        words = Words.objects.filter(word_length__gt=1,
+    elif request.level == 'hard':
+        words = Words.objects.filter(word_length__gt=2,
                                      word_length__lt=7,
                                      noun=True,
                                      very_simple=True)
         print(words)
+        if not Session.objects.filter(uid=request.uid):
+            Session.objects.create(uid=request.uid)
+            userInfo = Session.objects.filter(uid=request.uid)
+            print('new?')
+            score = userInfo.values()[0]['init_easy']
+        else:
+            userInfo = Session.objects.filter(uid=request.uid)
+            print('old?')
+            score = userInfo.values()[0]['init_easy']   
         response_content = {
             'uid': request.uid,
             'text': random.choice(words).consonants,

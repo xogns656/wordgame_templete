@@ -2,10 +2,16 @@ FROM python:3.6-slim
 RUN mkdir /app
 WORKDIR /app
 ADD requirements.txt /app/
+RUN apt-get update
+RUN apt-get install sqlite3
+RUN pip install --upgrade pip
+RUN pip install psycopg2-binary
 RUN pip install -r requirements.txt
 COPY . .
 RUN echo export PATH="$HOME/.local/bin:$PATH"
 EXPOSE 8000
 ENTRYPOINT ["./entrypoint_dev.sh"]
 RUN ["chmod", "+x", "./entrypoint_dev.sh"]
+RUN python minigame/manage.py makemigrations
+RUN python minigame/manage.py migrate --run-syncdb
 CMD ["start"]

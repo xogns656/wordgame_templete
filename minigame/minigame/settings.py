@@ -23,7 +23,7 @@ SECRET_KEY = 'h1=+2+u@4#yl#p#eqfo+p8=8ezv6jlh1o#vc_%df^$1-+1as6i'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1']
+ALLOWED_HOSTS = ['0.0.0.0','127.0.0.1','civitas.serveo.net']
 
 # Application definition
 
